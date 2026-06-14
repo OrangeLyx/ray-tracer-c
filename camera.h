@@ -13,6 +13,7 @@ public:
     int image_width = 100;      // Rendered image width in pixel count
     int samples_per_pixel = 10; // Count of random samples for each pixel
     int max_depth = 10;         // Maximum number of ray bounces into scene
+    color background;           // Scene background color
 
     double vfov = 90; // Vertical view angle (field of view)
 
@@ -93,9 +94,6 @@ private:
         pixel_delta_v = viewport_v / image_height;
 
         // Calculate the location of the upper left pixel.
-        // auto viewport_upper_left =
-        //     center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
-        // auto viewport_upper_left = center - (focal_length * w) - viewport_u / 2 - viewport_v / 2;
         auto viewport_upper_left = center - (focus_dist * w) - viewport_u / 2 - viewport_v / 2;
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
@@ -145,21 +143,20 @@ private:
 
         hit_record rec;
 
-        if (world.hit(r, interval(0.001, infinity), rec))
-        {
-            // vec3 direction = random_on_hemisphere(rec.normal);
-            // vec3 direction = rec.normal + random_unit_vector();
-            // return 0.9 * ray_color(ray(rec.p, direction), depth-1, world);
-            ray scattered;
-            color attenuation;
-            if (rec.mat->scatter(r, rec, attenuation, scattered))
-                return attenuation * ray_color(scattered, depth - 1, world);
-            return color(0, 0, 0);
-        }
+        // If the ray hits nothing, return the background color.
+        if (!world.hit(r, interval(0.001, infinity), rec))
+            return background;
 
-        vec3 unit_direction = unit_vector(r.direction());
-        auto a = 0.5 * (unit_direction.y() + 1.0);
-        return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
+        ray scattered;
+        color attenuation;
+        color color_from_emission = rec.mat->emitted(rec.u, rec.v, rec.p);
+
+        if (!rec.mat->scatter(r, rec, attenuation, scattered))
+            return color_from_emission;
+
+        color color_from_scatter = attenuation * ray_color(scattered, depth - 1, world);
+
+        return color_from_emission + color_from_scatter;
     }
 };
 
