@@ -1,8 +1,10 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall
+CXXFLAGS = -std=c++17 -Iinclude
 
-main: main.cpp
-	$(CXX) $(CXXFLAGS) main.cpp -o main
+SRC = $(wildcard src/*.cpp)
+
+main: $(SRC)
+	$(CXX) $(CXXFLAGS) $(SRC) -o main
 
 clean:
 	rm -f main
