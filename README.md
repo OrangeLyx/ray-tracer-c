@@ -15,3 +15,10 @@ Features
 + Volumetric rendering (constant medium)
 + Bounding Volume Hierarchy (BVH) acceleration
 + Rendering Results
+
+
+## Acknowledgements
+
+This project is based on the concepts and implementations presented in the Ray Tracing in One Weekend book series by Peter Shirley. The project was extended with additional rendering features and ongoing improvements.
+
+https://raytracing.github.io/
