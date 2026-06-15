@@ -15,5 +15,3 @@ Features
 + Volumetric rendering (constant medium)
 + Bounding Volume Hierarchy (BVH) acceleration
 + Rendering Results
-
-![Final Scene](pictures/show.pbm)
